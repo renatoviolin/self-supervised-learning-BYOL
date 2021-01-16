@@ -10,7 +10,7 @@ dogs = glob.glob('data/Dog/*.jpg')
 target_dir = 'data/no_label'
 
 # %%
-for c_path in cats[:124]:
+for c_path in cats[:125]:
     name = str(uuid.uuid4()).split('-')[0]
     target_path = f'{target_dir}/{name}.jpg'
     os.rename(c_path,target_path)

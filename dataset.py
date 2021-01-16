@@ -4,6 +4,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from PIL import Image
 from byol_transforms import DataTransform, denormalize
+import albumentations as A
 
 
 class BYOLDataset(Dataset):
@@ -20,33 +21,24 @@ class BYOLDataset(Dataset):
 
 
 # ===================================================================================
-import albumentations as A
 T_CLASSIFIER = A.Compose(
     [
         A.Resize(150, 150),
         A.HorizontalFlip(p=0.5),
-        A.Normalize(),
     ]
 )
 
 
 class ClassifierDataset(Dataset):
-    def __init__(self, folder, transforms=T_CLASSIFIER, training=True):
+    def __init__(self, folder, transforms=T_CLASSIFIER):
         self.folder = folder
         self.transforms = transforms
-        self.training = training
 
     def __getitem__(self, index):
         img_tuple = self.folder.imgs[index]
-
         img = np.array(Image.open(img_tuple[0]))
         label = img_tuple[1]
-
-        if self.training:
-            img = self.transforms(image=img)['image']
-        else:
-            img = self.transforms[0](image=img)['image']
-            img = self.transforms[2](image=img)['image']
+        img = self.transforms(image=img)['image']
 
         return torch.as_tensor(img, dtype=torch.float).permute(2, 0, 1), torch.as_tensor(label)
 
@@ -54,7 +46,7 @@ class ClassifierDataset(Dataset):
         return len(self.folder)
 
 
-# # %%
+# %% ============================== TESTS =====================================
 # import glob
 # from PIL import Image
 # import matplotlib.pyplot as plt

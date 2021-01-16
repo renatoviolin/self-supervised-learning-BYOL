@@ -23,7 +23,7 @@ EPOCHS = 50
 
 # %%
 train_data = torchvision.datasets.ImageFolder('data/label/train')
-train_dataset = dataset.ClassifierDataset(train_data, training=True)
+train_dataset = dataset.ClassifierDataset(train_data)
 train_dataloader = DataLoader(train_dataset, shuffle=True, num_workers=NUM_WORKERS, batch_size=BATCH_SIZE)
 
 
@@ -54,7 +54,7 @@ def valid_batch(batch, model, optimizer):
 
 
 # %% ================== CLASSIFIER FROM SCRATCH ======================
-net = ClassifierScratch().to(DEVICE)
+net = ClassifierScratch(train_backbone=False).to(DEVICE)
 optimizer = torch.optim.Adam(net.parameters(), lr=1e-4)
 loss_fn = torch.nn.CrossEntropyLoss()
 
@@ -73,7 +73,7 @@ for epoch in range(EPOCHS):
 
 
 # %% ================== CLASSIFIER FROM BYOL PRE-TRAINED ======================
-net = ClassifierBYOL('byol.pt').to(DEVICE)
+net = ClassifierBYOL('byol.pt', train_backbone=False).to(DEVICE)
 optimizer = torch.optim.Adam(net.parameters(), lr=1e-4)
 loss_fn = torch.nn.CrossEntropyLoss()
 
@@ -93,8 +93,8 @@ for epoch in range(EPOCHS):
 
 # %% ======== PLOT RESULTS =======================
 x = np.arange(len(scratch_loss))
-plt.title('Classifier Train loss')
-plt.plot(x[::10], scratch_loss[::10], label='scratch_loss')
-plt.plot(x[::10], byol_loss[::10], label='byol_loss')
+plt.title('Frozen Backbone - Classifier loss')
+plt.plot(x[::20], scratch_loss[::20], label='Random weights')
+plt.plot(x[::20], byol_loss[::20], label='BYOL weights')
 plt.legend()
-plt.savefig('loss.jpg')
+plt.savefig('loss2.png')

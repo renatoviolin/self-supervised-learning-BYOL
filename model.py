@@ -92,17 +92,19 @@ class BYOL(nn.Module):
 
 
 class ClassifierBYOL(nn.Module):
-    def __init__(self, checkpoint):
+    def __init__(self, checkpoint, train_backbone=True):
         super(ClassifierBYOL, self).__init__()
 
         self.backbone = torch.load(checkpoint, map_location=DEVICE)
-        # for p in self.backbone.parameters():
-        #     p.requires_grad = False
+
+        if train_backbone == False:
+            for p in self.backbone.parameters():
+                p.requires_grad = False
 
         self.classifier = nn.Sequential(
             nn.Linear(512, 128),
             nn.ReLU(inplace=True),
-            nn.Dropout(0.3),
+            # nn.Dropout(0.3),
             nn.Linear(128, 2)
         )
 
@@ -112,7 +114,7 @@ class ClassifierBYOL(nn.Module):
 
 
 class ClassifierScratch(nn.Module):
-    def __init__(self):
+    def __init__(self, train_backbone=True):
         super(ClassifierScratch, self).__init__()
 
         _m = models.resnet18(pretrained=False)
@@ -122,13 +124,14 @@ class ClassifierScratch(nn.Module):
             nn.Flatten()
         )
 
-        # for p in self.backbone.parameters():
-        #     p.requires_grad = False
+        if train_backbone == False:
+            for p in self.backbone.parameters():
+                p.requires_grad = False
 
         self.classifier = nn.Sequential(
             nn.Linear(512, 128),
             nn.ReLU(inplace=True),
-            nn.Dropout(0.3),
+            # nn.Dropout(0.3),
             nn.Linear(128, 2)
         )
 
@@ -137,7 +140,7 @@ class ClassifierScratch(nn.Module):
         return self.classifier(x)
 
 
-# %%
+# %% ============================== TESTS =====================================
 # inp = torch.rand(2, 3, 224, 224)
 # batch_size = 32
 # len_dataloader = 50

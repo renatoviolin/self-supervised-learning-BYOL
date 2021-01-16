@@ -66,7 +66,7 @@ class DataTransform():
         return xi, xj
 
 
-# %%
+# %% ============================== TESTS =====================================
 # import glob
 # from PIL import Image
 # import matplotlib.pyplot as plt
