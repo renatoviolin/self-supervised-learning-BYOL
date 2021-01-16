@@ -1,0 +1,4 @@
+*.jpg
+*.pt
+DS_Store
+__pycache__
